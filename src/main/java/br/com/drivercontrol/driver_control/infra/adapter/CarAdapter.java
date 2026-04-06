@@ -29,8 +29,8 @@ public class CarAdapter implements CarRepository {
     }
 
     @Override
-    public Optional<Car> findByPlaca(String placa) {
-        return jpaRepository.findByPlaca(placa).map(mapper::toDomain);
+    public Optional<Car> findByPlate(String plate) {
+        return jpaRepository.findByPlate(plate).map(mapper::toDomain);
     }
 
     @Override

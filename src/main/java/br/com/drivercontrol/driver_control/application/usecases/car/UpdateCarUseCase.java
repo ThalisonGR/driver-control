@@ -18,13 +18,13 @@ public class UpdateCarUseCase {
 
     public CarResponseDto execute(UUID id, UpdateCarRequestDto dto) {
         var car = carRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Carro não encontrado com ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Car not found with ID: " + id));
 
-        if (dto.placa() != null && !dto.placa().isBlank()) {
-            car.atualizarPlaca(dto.placa());
+        if (dto.plate() != null && !dto.plate().isBlank()) {
+            car.updatePlate(dto.plate());
         }
-        if (dto.quilometragemActual() != null) {
-            car.atualizarQuilometragem(dto.quilometragemActual());
+        if (dto.mileage() != null) {
+            car.updateMileage(dto.mileage());
         }
 
         carRepository.save(car);

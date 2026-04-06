@@ -6,6 +6,6 @@ import java.util.UUID;
 @Schema(description = "Response data for a car")
 public record CarResponseDto(
         @Schema(description = "Car ID") UUID id,
-        @Schema(description = "Vehicle plate") String placa,
-        @Schema(description = "Current mileage") Long quilometragemActual
+        @Schema(description = "Vehicle plate") String plate,
+        @Schema(description = "Current mileage") Long mileage
 ) {}

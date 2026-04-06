@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "transaction")
+@Table(name = "t_transaction")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,11 +23,12 @@ public class TransactionEntity {
     @Column(name = "car_id")
     private UUID carId;
 
+    @Column(name = "amount_")
     private BigDecimal value;
 
     private String currency;
 
-    private String typeTransaction;
+    private String type;
 
     private Long km;
 

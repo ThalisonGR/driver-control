@@ -15,14 +15,13 @@ import java.util.UUID;
 public class CarEntity {
 
     @Id
-    @GeneratedValue
     private UUID id;
 
-    private String placa;
+    private String plate;
 
-    @Column(name = "km_inicial")
-    private Long kmInicial;
+    @Column(name = "km_initial")
+    private Long KMInitial;
 
-    @Column(name = "km_atual")
-    private Long kmAtual;
+    @Column(name = "km_current")
+    private Long KMCurrent;
 }

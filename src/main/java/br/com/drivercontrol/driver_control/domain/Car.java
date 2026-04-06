@@ -1,5 +1,10 @@
 package br.com.drivercontrol.driver_control.domain;
 
+import br.com.drivercontrol.driver_control.domain.valueobject.Money;
+import br.com.drivercontrol.driver_control.domain.valueobject.TypeTransaction;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -7,60 +12,125 @@ import java.util.UUID;
 
 public class Car {
 
-    private UUID id;
-    private String placa;
-    private Long quilometragemAtual;
-    private List<Transaction> transacoes;
+    private final UUID id;
+    private String plate;
+    private Long currentMileage;
+    private final List<Transaction> transactions;
 
-    public Car(UUID id, String placa, Long kmInicial) {
+    public Car(UUID id, String plate, Long kmInitial) {
         this.id = id;
-        this.placa = placa;
-        this.quilometragemAtual = kmInicial;
-        this.transacoes = new ArrayList<>();
+        this.plate = plate;
+        this.currentMileage = kmInitial;
+        this.transactions = new ArrayList<>();
     }
 
-    public Car(String placa, Long kmInicial) {
-        this(UUID.randomUUID(), placa, kmInicial);
+    public Car(String plate, Long kmInitial) {
+        this(UUID.randomUUID(), plate, kmInitial);
     }
 
-    // Comportamento de Negócio: Lançar Valor
-    public void lancarGasto(Transaction transaction) {
-        // Regra de Negócio: Se a transação informar KM, ela não pode ser retroativa
+    // Business: Record a transaction
+    public void addTransaction(Transaction transaction) {
         if (transaction.getKm() != null) {
-            if (transaction.getKm() < this.quilometragemAtual) {
-                throw new IllegalArgumentException("KM do lançamento é menor que a quilometragem atual do carro.");
+            if (transaction.getKm() < this.currentMileage) {
+                throw new IllegalArgumentException("Transaction mileage cannot be lower than current mileage.");
             }
-            // Atualiza a quilometragem do carro com base no lançamento
-            this.quilometragemAtual = transaction.getKm();
+            this.currentMileage = transaction.getKm();
+        }
+        this.transactions.add(transaction);
+    }
+
+    // KM driven since the last fuel supply ref
+    public Long kmDrivenSinceLastSupply() {
+        return transactions.stream()
+                .filter(t -> t.getType() == TypeTransaction.Supply)
+                .reduce((first, second) -> second)
+                .map(t -> this.currentMileage - t.getKm())
+                .orElse(0L);
+    }
+
+    // Total spent on fuel since the last supply
+    public BigDecimal totalSuppliesSinceLast(String currency) {
+        return transactions.stream()
+                .filter(t -> t.getType() == TypeTransaction.Supply)
+                .reduce((first, second) -> second)
+                .map(t -> t.getValue().amount())
+                .orElse(BigDecimal.ZERO);
+    }
+
+    // Total spent on all supplies
+    public BigDecimal totalSpentOnSupplies(String currency) {
+        return transactions.stream()
+                .filter(t -> t.getType() == TypeTransaction.Supply)
+                .map(t -> t.getValue().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // Cost per KM driven (fuel expenses / KM driven)
+    public BigDecimal costPerKm(String currency) {
+        Long kmDriven = kmDrivenSinceLastSupply();
+        if (kmDriven == 0L) {
+            return BigDecimal.ZERO;
         }
 
-        this.transacoes.add(transaction);
+        BigDecimal fuelSpent = totalSpentOnSupplies(currency);
+        return fuelSpent.divide(BigDecimal.valueOf(kmDriven), 4, RoundingMode.HALF_UP);
     }
 
-    public void atualizarPlaca(String novaPlaca) {
-        this.placa = novaPlaca;
+    // Cash flow balance (income - expenses)
+    public BigDecimal cashFlowBalance(String currency) {
+        BigDecimal income = transactions.stream()
+                .filter(t -> t.getType() == TypeTransaction.UberIncome)
+                .map(t -> t.getValue().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal expenses = transactions.stream()
+                .filter(t -> t.getType() != TypeTransaction.UberIncome)
+                .map(t -> t.getValue().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        return income.subtract(expenses);
     }
 
-    public void atualizarQuilometragem(Long novaKm) {
-        if (novaKm != null && novaKm < this.quilometragemAtual) {
-            throw new IllegalArgumentException("A nova KM não pode ser menor que a KM atual.");
+    // Total expenses (non-income)
+    public BigDecimal totalExpenses(String currency) {
+        return transactions.stream()
+                .filter(t -> t.getType() != TypeTransaction.UberIncome)
+                .map(t -> t.getValue().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    // Total income
+    public BigDecimal totalIncome(String currency) {
+        return transactions.stream()
+                .filter(t -> t.getType() == TypeTransaction.UberIncome)
+                .map(t -> t.getValue().amount())
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    public void updatePlate(String newPlate) {
+        this.plate = newPlate;
+    }
+
+    public void updateMileage(Long newMileage) {
+        if (newMileage != null && newMileage < this.currentMileage) {
+            throw new IllegalArgumentException("New mileage cannot be lower than current mileage.");
         }
-        this.quilometragemAtual = novaKm;
+        this.currentMileage = newMileage;
     }
 
-    public List<Transaction> getTransacoes() {
-        return Collections.unmodifiableList(transacoes);
+    public List<Transaction> getTransactions() {
+        return Collections.unmodifiableList(transactions);
     }
 
     public UUID getId() {
         return id;
     }
 
-    public String getPlaca() {
-        return placa;
+    public String getPlate() {
+        return plate;
     }
 
-    public Long getQuilometragemAtual() {
-        return quilometragemAtual;
+    public Long getCurrentMileage() {
+        return currentMileage;
     }
 }

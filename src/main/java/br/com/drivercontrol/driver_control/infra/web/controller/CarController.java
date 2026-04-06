@@ -3,11 +3,8 @@ package br.com.drivercontrol.driver_control.infra.web.controller;
 import br.com.drivercontrol.driver_control.application.dtos.request.CreateCarRequestDto;
 import br.com.drivercontrol.driver_control.application.dtos.request.UpdateCarRequestDto;
 import br.com.drivercontrol.driver_control.application.dtos.response.CarResponseDto;
-import br.com.drivercontrol.driver_control.application.usecases.car.CreateCarUseCase;
-import br.com.drivercontrol.driver_control.application.usecases.car.DeleteCarUseCase;
-import br.com.drivercontrol.driver_control.application.usecases.car.FindCarByIdUseCase;
-import br.com.drivercontrol.driver_control.application.usecases.car.ListCarsUseCase;
-import br.com.drivercontrol.driver_control.application.usecases.car.UpdateCarUseCase;
+import br.com.drivercontrol.driver_control.application.dtos.response.ConsumptionResponseDto;
+import br.com.drivercontrol.driver_control.application.usecases.car.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,6 +27,7 @@ public class CarController {
     private final FindCarByIdUseCase findCarById;
     private final UpdateCarUseCase updateCar;
     private final DeleteCarUseCase deleteCar;
+    private final CalculateConsumptionUseCase calculateConsumption;
 
     @PostMapping
     @Operation(summary = "Create a new car", description = "Registers a new car with plate and initial mileage")
@@ -70,5 +68,13 @@ public class CarController {
     public ResponseEntity<Void> delete(@PathVariable UUID id) {
         deleteCar.execute(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/consumption")
+    @Operation(summary = "Get consumption metrics", description = "Returns fuel consumption and cost metrics for a car")
+    @ApiResponse(responseCode = "200", description = "Metrics retrieved successfully")
+    @ApiResponse(responseCode = "404", description = "Car not found")
+    public ResponseEntity<ConsumptionResponseDto> getConsumption(@PathVariable UUID id) {
+        return ResponseEntity.ok(calculateConsumption.execute(id));
     }
 }

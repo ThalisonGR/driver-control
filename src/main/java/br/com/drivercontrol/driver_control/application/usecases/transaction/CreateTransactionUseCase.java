@@ -19,12 +19,12 @@ public class CreateTransactionUseCase {
 
     public void execute(TransactionRequestDto dto) {
         Car car = carRepository.findById(dto.carId())
-                .orElseThrow(() -> new IllegalArgumentException("Carro não encontrado com ID: " + dto.carId()));
+                .orElseThrow(() -> new IllegalArgumentException("Car not found with ID: " + dto.carId()));
 
         Transaction transaction = mapper.toDomainFromDto(dto);
         transaction.validateLaunch();
 
-        car.lancarGasto(transaction);
+        car.addTransaction(transaction);
         carRepository.save(car);
         transactionRepository.save(transaction, car);
     }

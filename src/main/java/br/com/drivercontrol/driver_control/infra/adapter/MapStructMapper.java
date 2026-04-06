@@ -2,7 +2,6 @@ package br.com.drivercontrol.driver_control.infra.adapter;
 
 import br.com.drivercontrol.driver_control.application.dtos.request.CreateCarRequestDto;
 import br.com.drivercontrol.driver_control.application.dtos.request.TransactionRequestDto;
-import br.com.drivercontrol.driver_control.application.dtos.request.UpdateCarRequestDto;
 import br.com.drivercontrol.driver_control.application.dtos.response.CarResponseDto;
 import br.com.drivercontrol.driver_control.application.dtos.response.TransactionResponseDto;
 import br.com.drivercontrol.driver_control.domain.Car;
@@ -24,23 +23,23 @@ public abstract class MapStructMapper {
     public CarEntity toEntity(Car car) {
         var entity = new CarEntity();
         entity.setId(car.getId());
-        entity.setPlaca(car.getPlaca());
-        entity.setKmInicial(car.getQuilometragemAtual());
-        entity.setKmAtual(car.getQuilometragemAtual());
+        entity.setPlate(car.getPlate());
+        entity.setKMInitial(car.getCurrentMileage());
+        entity.setKMCurrent(car.getCurrentMileage());
         return entity;
     }
 
     public Car toDomain(CarEntity entity) {
-        return new Car(entity.getId(), entity.getPlaca(), entity.getKmAtual());
+        return new Car(entity.getId(), entity.getPlate(), entity.getKMCurrent());
     }
 
     // --- Domain -> Entity: Transaction ---
     public TransactionEntity toEntityFromTransaction(Transaction transaction, Car car) {
         var entity = new TransactionEntity();
         entity.setCarId(car.getId());
-        entity.setValue(transaction.getValue().quantity());
-        entity.setCurrency(transaction.getValue().moeda());
-        entity.setTypeTransaction(transaction.getTipo().nameTransaction());
+        entity.setValue(transaction.getValue().amount());
+        entity.setCurrency(transaction.getValue().currency());
+        entity.setType(transaction.getType().nameTransaction());
         entity.setKm(transaction.getKm());
         entity.setDescription(transaction.getDescription());
         entity.setCreatedAt(LocalDateTime.now());
@@ -50,7 +49,7 @@ public abstract class MapStructMapper {
     // --- Entity -> Domain: Transaction ---
     public Transaction toDomainFromEntity(TransactionEntity entity) {
         var money = new Money(entity.getValue(), entity.getCurrency());
-        var type = resolveType(entity.getTypeTransaction());
+        var type = resolveType(entity.getType());
         return new Transaction(
                 entity.getId(),
                 money,
@@ -64,7 +63,7 @@ public abstract class MapStructMapper {
     // --- DTO -> Domain ---
     public Transaction toDomainFromDto(TransactionRequestDto dto) {
         var money = new Money(dto.value(), dto.currency());
-        var type = resolveType(dto.typeTransaction());
+        var type = resolveType(dto.type());
         return new Transaction(money, type, dto.km());
     }
 
@@ -78,11 +77,11 @@ public abstract class MapStructMapper {
 
     // --- Car DTO <-> Domain ---
     public Car createCarFromDto(CreateCarRequestDto dto) {
-        return new Car(dto.placa(), dto.quilometragemActual());
+        return new Car(dto.plate(), dto.initialMileage());
     }
 
     public CarResponseDto toCarResponseDto(Car car) {
-        return new CarResponseDto(car.getId(), car.getPlaca(), car.getQuilometragemAtual());
+        return new CarResponseDto(car.getId(), car.getPlate(), car.getCurrentMileage());
     }
 
     public List<CarResponseDto> toCarResponseDtoList(List<Car> cars) {
@@ -96,9 +95,9 @@ public abstract class MapStructMapper {
         return new TransactionResponseDto(
                 transaction.getId(),
                 carId,
-                transaction.getValue().quantity(),
-                transaction.getValue().moeda(),
-                transaction.getTipo().nameTransaction(),
+                transaction.getValue().amount(),
+                transaction.getValue().currency(),
+                transaction.getType().nameTransaction(),
                 transaction.getKm(),
                 transaction.getDescription(),
                 transaction.getCreatedAt()
@@ -107,10 +106,11 @@ public abstract class MapStructMapper {
 
     private TypeTransaction resolveType(String name) {
         return switch (name) {
-            case "Supplu" -> TypeTransaction.Supplu;
+            case "Supply" -> TypeTransaction.Supply;
             case "Maintenance" -> TypeTransaction.Maintenance;
             case "Tax" -> TypeTransaction.Tax;
             case "Others" -> TypeTransaction.Others;
+            case "UberIncome" -> TypeTransaction.UberIncome;
             default -> new TypeTransaction(name, false);
         };
     }

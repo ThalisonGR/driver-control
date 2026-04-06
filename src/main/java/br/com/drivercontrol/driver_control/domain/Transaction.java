@@ -8,35 +8,35 @@ import java.util.UUID;
 
 public class Transaction {
 
-    private UUID id;
+    private final UUID id;
     private final Money value;
-    private final TypeTransaction tipo;
+    private final TypeTransaction type;
     private final Long km;
     private String description;
     private LocalDateTime createdAt;
 
-    public Transaction(Money value, TypeTransaction tipo, Long km) {
-        this(UUID.randomUUID(), value, tipo, km, null, LocalDateTime.now());
+    public Transaction(Money value, TypeTransaction type, Long km) {
+        this(UUID.randomUUID(), value, type, km, null, LocalDateTime.now());
     }
 
-    public Transaction(UUID id, Money value, TypeTransaction tipo, Long km, String description, LocalDateTime createdAt) {
+    public Transaction(UUID id, Money value, TypeTransaction type, Long km, String description, LocalDateTime createdAt) {
         if (value == null) {
-            throw new IllegalArgumentException("O valor da transação é obrigatório.");
+            throw new IllegalArgumentException("Transaction value is required.");
         }
-        if (tipo == null) {
-            throw new IllegalArgumentException("O tipo da transação é obrigatório.");
+        if (type == null) {
+            throw new IllegalArgumentException("Transaction type is required.");
         }
 
         this.id = id;
         this.value = value;
-        this.tipo = tipo;
+        this.type = type;
         this.km = km;
         this.description = description;
         this.createdAt = createdAt;
     }
 
     public void validateLaunch() {
-        this.tipo.validedLaunch(this.km);
+        this.type.validateLaunch(this.km);
     }
 
     public UUID getId() {
@@ -47,8 +47,8 @@ public class Transaction {
         return value;
     }
 
-    public TypeTransaction getTipo() {
-        return tipo;
+    public TypeTransaction getType() {
+        return type;
     }
 
     public Long getKm() {

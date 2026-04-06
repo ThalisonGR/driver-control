@@ -6,5 +6,5 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CarJpaRepository extends JpaRepository<CarEntity, UUID> {
-    Optional<CarEntity> findByPlaca(String placa);
+    Optional<CarEntity> findByPlate(String plate);
 }

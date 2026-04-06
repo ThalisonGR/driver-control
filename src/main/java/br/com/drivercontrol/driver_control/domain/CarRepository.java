@@ -12,7 +12,7 @@ public interface CarRepository {
 
     Optional<Car> findById(UUID id);
 
-    Optional<Car> findByPlaca(String placa);
+    Optional<Car> findByPlate(String plate);
 
     void delete(UUID id);
 }

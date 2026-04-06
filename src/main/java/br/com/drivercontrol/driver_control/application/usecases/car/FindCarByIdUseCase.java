@@ -17,7 +17,7 @@ public class FindCarByIdUseCase {
 
     public CarResponseDto execute(UUID id) {
         var car = carRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Carro não encontrado com ID: " + id));
+                .orElseThrow(() -> new IllegalArgumentException("Car not found with ID: " + id));
         return mapper.toCarResponseDto(car);
     }
 }

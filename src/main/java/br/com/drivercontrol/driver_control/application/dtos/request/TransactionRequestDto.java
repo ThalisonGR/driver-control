@@ -6,16 +6,16 @@ import java.util.UUID;
 
 @Schema(description = "Request data for creating a transaction")
 public record TransactionRequestDto(
-        @Schema(description = "ID of the car associated with this transaction", example = "550e8400-e29b-41d4-a716-446655440000")
+        @Schema(description = "ID of the car associated with this transaction")
         UUID carId,
         @Schema(description = "Transaction amount", example = "200.50")
         BigDecimal value,
         @Schema(description = "Currency code", example = "BRL")
         String currency,
-        @Schema(description = "Transaction type: Supplu, Maintenance, Tax, Others", example = "Supplu")
-        String typeTransaction,
-        @Schema(description = "Current vehicle mileage at the time of transaction", example = "50000")
+        @Schema(description = "Transaction type: Supply, Maintenance, Tax, Others, UberIncome", example = "Supply")
+        String type,
+        @Schema(description = "Current vehicle mileage at the time of transaction")
         Long km,
-        @Schema(description = "Optional description of the transaction", example = "Gasolina - Posto Shell")
+        @Schema(description = "Optional description of the transaction")
         String description
 ) {}
