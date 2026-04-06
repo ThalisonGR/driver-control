@@ -2,11 +2,11 @@ package br.com.drivercontrol.driver_control.infra.adapter;
 
 import br.com.drivercontrol.driver_control.domain.Car;
 import br.com.drivercontrol.driver_control.domain.CarRepository;
-import br.com.drivercontrol.driver_control.domain.model.car.Car;
-import br.com.drivercontrol.driver_control.domain.model.car.CarRepository;
+import br.com.drivercontrol.driver_control.infra.provider.h2.CarJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,31 +14,34 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class CarAdapter implements CarRepository {
 
-    private final SpringDataCarRepository jpaRepository; // A interface do Spring Data
+    private final CarJpaRepository jpaRepository;
+    private final MapStructMapper mapper;
 
     @Override
     public void save(Car car) {
-        // 1. Converte Dominio -> Entidade (Aqui entrará o MapStruct depois)
-        CarEntity entity = toEntity(car);
-
-        // 2. Salva no banco
+        var entity = mapper.toEntity(car);
         jpaRepository.save(entity);
     }
 
     @Override
     public Optional<Car> findById(UUID id) {
-        // 1. Busca Entidade
-        // 2. Converte Entidade -> Dominio e retorna
-        return jpaRepository.findById(id).map(this::toDomain);
+        return jpaRepository.findById(id).map(mapper::toDomain);
     }
 
-    // Métodos de conversão manual enquanto o MapStruct não chega
-    private CarEntity toEntity(Car car) {
-        // Mapeia os dados do objeto de domínio para a sua @Entity JPA
-        return new CarEntity(car.getId(), car.getPlaca(), car.getQuilometragemAtual());
+    @Override
+    public Optional<Car> findByPlaca(String placa) {
+        return jpaRepository.findByPlaca(placa).map(mapper::toDomain);
     }
 
-    private Car toDomain(CarEntity entity) {
-        return new Car(entity.getId(), entity.getPlaca(), entity.getKm());
+    @Override
+    public void delete(UUID id) {
+        jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public List<Car> findAll() {
+        return jpaRepository.findAll().stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

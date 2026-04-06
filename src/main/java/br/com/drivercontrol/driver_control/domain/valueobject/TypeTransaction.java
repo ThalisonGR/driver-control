@@ -16,7 +16,7 @@ public record TypeTransaction(String nameTransaction, Boolean requiredMileage) {
     }
 
     public void validedLaunch(Long kmInformed) {
-        if (this.requiredMileage && (kmInformed == null || kmInformada <= 0)) {
+        if (this.requiredMileage && (kmInformed == null || kmInformed <= 0)) {
             throw new TransactionsExeption("Para o tipo " + nameTransaction + ", a quilometragem é obrigatória.");
         }
     }

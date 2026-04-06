@@ -19,6 +19,10 @@ public class Car {
         this.transacoes = new ArrayList<>();
     }
 
+    public Car(String placa, Long kmInicial) {
+        this(UUID.randomUUID(), placa, kmInicial);
+    }
+
     // Comportamento de Negócio: Lançar Valor
     public void lancarGasto(Transaction transaction) {
         // Regra de Negócio: Se a transação informar KM, ela não pode ser retroativa
@@ -33,7 +37,30 @@ public class Car {
         this.transacoes.add(transaction);
     }
 
+    public void atualizarPlaca(String novaPlaca) {
+        this.placa = novaPlaca;
+    }
+
+    public void atualizarQuilometragem(Long novaKm) {
+        if (novaKm != null && novaKm < this.quilometragemAtual) {
+            throw new IllegalArgumentException("A nova KM não pode ser menor que a KM atual.");
+        }
+        this.quilometragemAtual = novaKm;
+    }
+
     public List<Transaction> getTransacoes() {
         return Collections.unmodifiableList(transacoes);
+    }
+
+    public UUID getId() {
+        return id;
+    }
+
+    public String getPlaca() {
+        return placa;
+    }
+
+    public Long getQuilometragemAtual() {
+        return quilometragemAtual;
     }
 }
