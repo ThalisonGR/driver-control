@@ -4,9 +4,10 @@ import br.com.drivercontrol.driver_control.application.dtos.response.Transaction
 import br.com.drivercontrol.driver_control.domain.TransactionRepository;
 import br.com.drivercontrol.driver_control.infra.adapter.MapStructMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,10 +17,8 @@ public class ListTransactionsUseCase {
     private final TransactionRepository transactionRepository;
     private final MapStructMapper mapper;
 
-    public List<TransactionResponseDto> execute(UUID carId) {
-        var transactions = transactionRepository.findByCarId(carId);
-        return transactions.stream()
-                .map(t -> mapper.toResponseDto(t, carId))
-                .toList();
+    public Page<TransactionResponseDto> execute(UUID carId, Pageable pageable) {
+        return transactionRepository.findByCarId(carId, pageable)
+                .map(t -> mapper.toResponseDto(t, carId));
     }
 }

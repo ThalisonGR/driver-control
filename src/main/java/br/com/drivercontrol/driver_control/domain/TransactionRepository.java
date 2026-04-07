@@ -1,11 +1,13 @@
 package br.com.drivercontrol.driver_control.domain;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 import java.util.UUID;
 
 public interface TransactionRepository {
 
     void save(Transaction transaction, Car car);
 
-    List<Transaction> findByCarId(UUID carId);
+    Page<Transaction> findByCarId(UUID carId, Pageable pageable);
 }

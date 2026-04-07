@@ -1,4 +1,4 @@
-package br.com.drivercontrol.driver_control.infra.provider.h2;
+package br.com.drivercontrol.driver_control.infra.provider.postgres;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -17,7 +17,6 @@ import java.util.UUID;
 public class TransactionEntity {
 
     @Id
-    @GeneratedValue
     private UUID id;
 
     @Column(name = "car_id")

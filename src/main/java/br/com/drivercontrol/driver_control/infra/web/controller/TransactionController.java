@@ -8,11 +8,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -34,10 +36,12 @@ public class TransactionController {
     }
 
     @GetMapping
-    @Operation(summary = "List transactions by car", description = "Returns all transactions for a specific car")
-    @ApiResponse(responseCode = "200", description = "List of transactions retrieved successfully")
-    public ResponseEntity<List<TransactionResponseDto>> listByCar(@RequestParam UUID carId) {
-        var transactions = listTransactions.execute(carId);
+    @Operation(summary = "List transactions by car", description = "Returns transactions for a specific car with pagination")
+    @ApiResponse(responseCode = "200", description = "Page of transactions retrieved successfully")
+    public ResponseEntity<Page<TransactionResponseDto>> listByCar(
+            @RequestParam UUID carId,
+            @PageableDefault(size = 10) Pageable pageable) {
+        var transactions = listTransactions.execute(carId, pageable);
         return ResponseEntity.ok(transactions);
     }
 }

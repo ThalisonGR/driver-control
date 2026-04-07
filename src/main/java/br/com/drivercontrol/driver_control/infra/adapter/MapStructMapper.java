@@ -8,8 +8,8 @@ import br.com.drivercontrol.driver_control.domain.Car;
 import br.com.drivercontrol.driver_control.domain.Transaction;
 import br.com.drivercontrol.driver_control.domain.valueobject.Money;
 import br.com.drivercontrol.driver_control.domain.valueobject.TypeTransaction;
-import br.com.drivercontrol.driver_control.infra.provider.h2.CarEntity;
-import br.com.drivercontrol.driver_control.infra.provider.h2.TransactionEntity;
+import br.com.drivercontrol.driver_control.infra.provider.postgres.CarEntity;
+import br.com.drivercontrol.driver_control.infra.provider.postgres.TransactionEntity;
 import org.mapstruct.Mapper;
 
 import java.time.LocalDateTime;

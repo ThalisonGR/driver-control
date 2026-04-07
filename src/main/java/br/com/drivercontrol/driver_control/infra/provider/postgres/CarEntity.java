@@ -1,4 +1,4 @@
-package br.com.drivercontrol.driver_control.infra.provider.h2;
+package br.com.drivercontrol.driver_control.infra.provider.postgres;
 
 import jakarta.persistence.*;
 import lombok.Getter;

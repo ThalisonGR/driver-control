@@ -3,11 +3,12 @@ package br.com.drivercontrol.driver_control.infra.adapter;
 import br.com.drivercontrol.driver_control.domain.Car;
 import br.com.drivercontrol.driver_control.domain.Transaction;
 import br.com.drivercontrol.driver_control.domain.TransactionRepository;
-import br.com.drivercontrol.driver_control.infra.provider.h2.TransactionJpaRepository;
+import br.com.drivercontrol.driver_control.infra.provider.postgres.TransactionJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.UUID;
 
 @Component
@@ -24,10 +25,8 @@ public class TransactionAdapter implements TransactionRepository {
     }
 
     @Override
-    public List<Transaction> findByCarId(UUID carId) {
-        return jpaRepository.findByCarId(carId)
-                .stream()
-                .map(mapper::toDomainFromEntity)
-                .toList();
+    public Page<Transaction> findByCarId(UUID carId, Pageable pageable) {
+        return jpaRepository.findByCarId(carId, pageable)
+                .map(mapper::toDomainFromEntity);
     }
 }

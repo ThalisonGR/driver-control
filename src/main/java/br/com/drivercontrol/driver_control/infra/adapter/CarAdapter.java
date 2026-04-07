@@ -2,11 +2,12 @@ package br.com.drivercontrol.driver_control.infra.adapter;
 
 import br.com.drivercontrol.driver_control.domain.Car;
 import br.com.drivercontrol.driver_control.domain.CarRepository;
-import br.com.drivercontrol.driver_control.infra.provider.h2.CarJpaRepository;
+import br.com.drivercontrol.driver_control.infra.provider.postgres.CarJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -39,9 +40,8 @@ public class CarAdapter implements CarRepository {
     }
 
     @Override
-    public List<Car> findAll() {
-        return jpaRepository.findAll().stream()
-                .map(mapper::toDomain)
-                .toList();
+    public Page<Car> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable)
+                .map(mapper::toDomain);
     }
 }

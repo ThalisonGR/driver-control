@@ -9,11 +9,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,10 +41,10 @@ public class CarController {
     }
 
     @GetMapping
-    @Operation(summary = "List all cars", description = "Returns all registered cars")
-    @ApiResponse(responseCode = "200", description = "List of cars retrieved successfully")
-    public ResponseEntity<List<CarResponseDto>> list() {
-        return ResponseEntity.ok(listCars.execute());
+    @Operation(summary = "List all cars", description = "Returns all registered cars with pagination")
+    @ApiResponse(responseCode = "200", description = "Page of cars retrieved successfully")
+    public ResponseEntity<Page<CarResponseDto>> list(@PageableDefault(size = 10) Pageable pageable) {
+        return ResponseEntity.ok(listCars.execute(pageable));
     }
 
     @GetMapping("/{id}")
