@@ -36,6 +36,7 @@ public abstract class MapStructMapper {
     // --- Domain -> Entity: Transaction ---
     public TransactionEntity toEntityFromTransaction(Transaction transaction, Car car) {
         var entity = new TransactionEntity();
+        entity.setId(transaction.getId());
         entity.setCarId(car.getId());
         entity.setValue(transaction.getValue().amount());
         entity.setCurrency(transaction.getValue().currency());

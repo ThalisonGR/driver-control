@@ -31,5 +31,13 @@ services:
       db:
         condition: service_healthy
 
+  frontend:
+    build: ../driver-control-web
+    container_name: driver_control_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - app
+
 volumes:
   postgres_data:
